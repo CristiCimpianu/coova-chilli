@@ -368,3 +368,22 @@ radiusconfig() {
     checkfornew
 }
 
+ROUTES_FILE=@VARRUN@/chilli_routes.$HS_LANIF
+
+storeroutes() {
+    if [ -z "$1" ]; then
+        return
+    fi
+    route -n | grep $1 > $ROUTES_FILE
+    sed -i '/0\.0\.0\.0/d' $ROUTES_FILE
+}
+
+restoreroutes() {
+    if [ ! -f $ROUTES_FILE ]; then
+        return
+    fi
+    while read saved_route; do
+        cmd=`echo "$saved_route" | awk '{print "route add -net "$1" netmask "$3" gw "$2" metric "$5;}'`
+        eval $cmd
+    done < $ROUTES_FILE
+}

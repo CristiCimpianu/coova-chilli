@@ -23,4 +23,5 @@ then
     flock -x $LOCKED_FILE -c "$0 $@"
 else
     run_down
+    storeroutes $TUNTAP
 fi

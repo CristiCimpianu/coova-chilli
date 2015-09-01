@@ -103,4 +103,8 @@ then
     flock -x $LOCKED_FILE -c "$0 $@"
 else
     run_up
+    [ -f $ROUTES_FILE ] && {
+        restoreroutes $ROUTES_FILE
+        rm $ROUTES_FILE
+    }
 fi
