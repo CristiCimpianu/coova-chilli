@@ -54,6 +54,9 @@ endif
 if WITH_JSONLIB
 AM_CFLAGS += -I$(top_builddir)/json
 libchilli_la_LIBADD += $(top_builddir)/json/libjson.la 
+if NEED_LIBM
+libchilli_la_LIBADD += -lm
+endif
 LDADD += $(top_builddir)/json/libjson.la 
 endif
 

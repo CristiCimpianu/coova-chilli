@@ -727,8 +727,12 @@ fi
 AC_ARG_ENABLE(libjson, [AS_HELP_STRING([--enable-libjson],[Enable support for libjson])], 
   enable_libjson=$enableval, enable_libjson=no)
 
+AS_IF([test x"$enable_libjson" != xno],
+  [AC_SEARCH_LIBS([__isnan],[],[need_libm=no],[need_libm=yes])])
+
 AM_CONDITIONAL(WITH_EWTAPI, [test x"$enable_ewtapi" = xyes])
 AM_CONDITIONAL(WITH_JSONLIB, [test x"$enable_ewtapi" = xyes || test x"$enable_libjson" = xyes])
+AM_CONDITIONAL(NEED_LIBM, [test x"$need_libm" = xyes])
 
 AC_ARG_ENABLE(ssdp, [AS_HELP_STRING([--enable-ssdp],[Enable support for Simple Service Discovery Protocol])], 
   enable_ssdp=$enableval, enable_ssdp=no)
