@@ -92,7 +92,7 @@ openssl_verify_peer(openssl_env *env, int mode) {
 int
 openssl_use_certificate(openssl_env *env, char *file) {
   if (file)
-    if (SSL_CTX_use_certificate_file(env->ctx, file, SSL_FILETYPE_PEM) > 0)
+    if (SSL_CTX_use_certificate_chain_file(env->ctx, file) > 0)
       return 1;
   syslog(LOG_ERR, "%s: could not load certificate file %s\n", strerror(errno), file);
   return 0;
@@ -125,13 +125,13 @@ _openssl_env_init(openssl_env *env, char *engine, int server) {
    * If ``server'' is 1, the environment is that of a SSL
    * server.
    */
-  if (server) {
-    env->meth = SSLv23_server_method();
-  } else {
-    env->meth = TLSv1_client_method();
-  }
+  const long options = SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_COMPRESSION;
+  env->meth = SSLv23_method();
   env->ctx = SSL_CTX_new(env->meth);
-  SSL_CTX_set_options(env->ctx, SSL_OP_ALL);
+  SSL_CTX_set_options(env->ctx, options);
+  if (_options.sslciphers) {
+    SSL_CTX_set_cipher_list(env->ctx, _options.sslciphers);
+  }
 #ifdef HAVE_OPENSSL_ENGINE
   if (engine) {
  retry:
